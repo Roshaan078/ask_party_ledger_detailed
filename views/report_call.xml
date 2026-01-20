@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-         
-        <record id="paperformat_euro_lowmargin_custom" model="report.paperformat">
-            <field name="name">Party Ledger Details </field>
+    <data>
+        <!-- Paper Format for Report -->
+        <record id="paperformat_party_ledger_custom" model="report.paperformat">
+            <field name="name">Party Ledger Details</field>
             <field name="default" eval="True"/>
             <field name="format">A4</field>
-            <field name="page_height">0</field>
-            <field name="page_width">0</field>
             <field name="orientation">Portrait</field>
             <field name="margin_top">5</field>
             <field name="margin_bottom">12</field>
@@ -17,13 +15,14 @@
             <field name="header_spacing">3</field>
             <field name="dpi">110</field>
         </record>
-          <report 
+        <report
             id="action_report_partnerledger_detailed"
             model="party.ledger.detailed"
             string="Party Ledger Detailed"
             report_type="qweb-pdf"
-            name="party_ledger_detailed.report_party_ledger"
-            file="party_ledger_detailed.report_party_ledger"
-            paperformat="party_ledger_detailed.paperformat_euro_lowmargin_custom"
-            />
+            name="ask_party_ledger_detailed.report_party_ledger"
+            file="ask_party_ledger_detailed.report_party_ledger"
+            paperformat="paperformat_party_ledger_custom"
+        />
+    </data>
 </odoo>

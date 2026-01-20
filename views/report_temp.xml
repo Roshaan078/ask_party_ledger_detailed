@@ -1,387 +1,65 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <template id="report_party_ledger">
+        <t t-set="datetime" t-value="__import__('datetime')"/>
         <t t-call="web.html_container">
-        <!-- <t t-set="data_report_margin_top" t-value="12"/>
-        <t t-set="data_report_margin_bottom" t-value="0"/>
-        <t t-set="data_report_header_spacing" t-value="9"/> -->
-        <!-- <t t-set="data_report_dpi" t-value="110"/> -->
-        <t t-foreach="docs" t-as="o">
-            <!-- <t t-call="report.internal_layout"> -->
-            <t t-call="web.internal_layout">
-                <div class="page" >
-                   
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.internal_layout">
+                    <div class="page">
 
-                    <div class="row" style="padding-top:100px;font-family:Times New Roman, Times, serif;">
-                        <div class="col-xs-12">
-                           <strong>
-                               
-                               <u>Customer Name:</u>
-                                   
-                               <span t-esc="o.name" style="font-size:20px;padding-left:20px;font-family:Serif;"/>
-                               
-                           </strong>
-                            
-                        </div>
-                    </div>
-                    <!-- <br/> -->
-                   <div class="row" style="font-family:Times New Roman, Times, serif;">
-                        <div class="col-xs-6" style="text-align:left;">
-                            <t t-if="data['form']['date_from']"><strong >From:</strong></t><br/>
-                            <t t-if="data['form']['date_to']"><strong >To :</strong></t>
-                        </div>
-                        <div class="col-xs-6" style="text-align:center;">
-                            <t t-if="data['form']['date_from']"><span t-esc="datetime.datetime.strptime(data['form']['date_from'], '%Y-%m-%d').strftime('%d/%m/%Y')"/><br/></t>
-                            <t t-if="data['form']['date_to']"><span t-esc="datetime.datetime.strptime(data['form']['date_to'], '%Y-%m-%d').strftime('%d/%m/%Y')" /></t>
-                        </div>
-                    </div>
-                    
-                    <br/><br/><br/>
-                    <table class="table table-condensed" style="border: 1px solid black;">
-                        <t t-set="temp" t-value="none"/>
-                        <t t-set="bill" t-value="BILL"/>
-                        <t t-set="inv" t-value="INV"/>
-                        <t t-set="index" t-value="0"/>
-                        <t t-set="ind" t-value="0"/>
-                        <t t-set="cond" t-value="False"/>
-                        <t t-set="open" t-value="0"/>
-                        <t t-set="value" t-value="0"/>
-                        <t t-set="tax" t-value="0"/>
-                        <t t-set="t_tax" t-value="0"/>
-                        <t t-set="inv_tax" t-value="0"/>
-                        <t t-set="tax_total" t-value="0"/>
-                        <t t-set="inv_origin" t-value="none"/>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Vr.</th>
-                                <!-- <th>Bill No</th>
-                                <th>P.O No</th> -->
-                                <th>Inv No</th>
-                                <th>Description</th>
-                                <th>Quantity</th>
-                                <th>Rate</th>
-                                <th>Debit</th>
-                                <th>Credit</th>
-                                <th>Balance</th>
-                                <th t-if="data['form']['amount_currency']">Currency</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                         <t t-set="initial_debit" t-value="initial_sum_partner(data, o, 'debit')"/>
-                            <t t-set="initial_credit" t-value="initial_sum_partner(data, o, 'credit')"/>
-                            <t t-set="initial_debit_credit" t-value="initial_sum_partner(data, o, 'debit - credit')"/>
-                            <!-- end -->
-                            <t t-set="debit" t-value="sum_partner(data, o, 'debit')"/>
-                            <t t-set="credit" t-value="sum_partner(data, o, 'credit')"/>
-                            <t t-set="debit_credit" t-value="sum_partner(data, o, 'debit - credit')"/>
-                                 <tr style="border: 1px solid black;">
-                                <td colspan="4">
-                                       Initial Balance
-                                </td>
-                                <td></td>
-                                <td></td>
-                                <td class="text-right">
-                                    <t t-if="initial_debit != 0">
-                                        <strong t-esc="(initial_debit - debit)" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                    </t>
-                                </td>
-                                <td class="text-right">
-                                    <t t-if="initial_credit != 0">
-                                        <strong t-esc="(initial_credit - credit)" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                    </t>
-                                </td>
-                                <td class="text-right">
-                                    <t t-if="initial_debit_credit != 0">
-                                        <strong t-esc="(initial_debit_credit - debit_credit)" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                        <t t-set="open" t-value="(initial_debit_credit - debit_credit)"/>
-                                    </t>
-                                </td>
-                            </tr>
-                            
-                            <tr style="height:2px;border: 1px solid black;">
-                               
-                            </tr>
-                            
-                            <t t-foreach="lines(data, o)" t-as="line" >
-                                
-                                <t t-if="'BILL' in line['displayed_name']">
-                                    <t t-set="temp" t-value="line['displayed_name'][0:14]"/>
-                 
-                                </t>
-                                
-                                <t t-if="'INV' in line['displayed_name']">
-                                    <t t-set="temp" t-value="line['displayed_name'][0:13]"/>
-                                     
-                                </t>
-                                
-                                <t t-if="'BNK' in line['displayed_name']">
-                                    <t t-set="temp" t-value="line['name']"/>
-                                     
-                                </t>
-                                
-                                 <t t-if="'CSH' in line['displayed_name']">
-                                    <t t-set="temp" t-value="line['displayed_name']"/>
-                                     
-                                </t>
-                        
-                                 <!-- <t t-raw="temp"/> -->
-                                <t t-foreach="o.invoice_ids" t-as="i">
-                                   
-                                        <t t-if="cond == False">
-                                            <t t-if="temp == o.invoice_ids[index].number">
-                                                        <t t-set="tax" t-value="o.invoice_ids[index].amount_tax"/>
-                                                        <t t-set="t_tax" t-value="t_tax+tax"/>
-                                                        <t t-set="inv_tax" t-value="o.invoice_ids[index].number"/>
-                                                        <!-- <t t-if="o.invoice_ids[index].origin"> -->
-                                                          <t t-set="inv_origin" t-value="o.invoice_ids[index].origin"/>
-                                                         
-                                                        <!--  </t> -->
-                                                        <tr t-foreach="i.invoice_line_ids" t-as="product" style="border: 1px solid black;">
-                                                                <td style="border: 1px solid black;">
-                                                                    <span t-esc="line['date']"/>
-                                                                </td>
-                                                                <td style="border: 1px solid black;">
-                                                                    <span t-esc="o.invoice_ids[index].move_id.display_name"/>
-                                                                </td>
+                        <h3>
+                            Party Ledger :
+                            <span t-esc="o.name"/>
+                        </h3>
 
-                                                                <td style="border: 1px solid black;">
-                                                                   <span t-esc="o.invoice_ids[index].number"/>
-                                                                </td>
-                                                                <td style="border: 1px solid black;">
-                                                                    <span t-esc="o.invoice_ids[index].invoice_line_ids[ind].display_name"/>
-                                                                </td>
-                                                                <td style="border: 1px solid black;">
-                                                                    <span t-esc="'{0:,.2f}'.format(o.invoice_ids[index].invoice_line_ids[ind].quantity)"/>
-                                                                </td>
-                                                                <td style="border: 1px solid black;">
-                                                                    <span t-esc="'{0:,.2f}'.format(o.invoice_ids[index].invoice_line_ids[ind].price_unit)"/>
-                                                                </td>
-                                                                <td style="border: 1px solid black;"  class="text-right">
-                                                                    <t t-if ="inv_origin == False or 'SO' in inv_origin">
-                                                                    <!-- 'INV' not in inv_origin -->
-                                                                        <!-- Check INV is not credit NOT Written by SM -->
-                                                                        <t t-if="o.invoice_ids[index].type != 'out_refund'">
-                                                                            <t t-if="'INV' in temp">
+                        <p>
+                            From:
+                            <span t-esc="datetime.datetime.strptime(data['form']['date_from'], '%Y-%m-%d').strftime('%d/%m/%Y')"/>
+                            &nbsp;&nbsp;
+                            To:
+                            <span t-esc="datetime.datetime.strptime(data['form']['date_to'], '%Y-%m-%d').strftime('%d/%m/%Y')"/>
+                        </p>
 
-                                                                             <span t-esc="'{0:,.2f}'.format(o.invoice_ids[index].invoice_line_ids[ind].price_subtotal)"/> Rs.
-                                                                             <t t-set="open" t-value="open + o.invoice_ids[index].invoice_line_ids[ind].price_subtotal"/>
-                                                                             </t>
-                                                                        </t>
-
-                                                                    </t>
-
-
-                                                                    <!-- In case of Debit Note Bill written by SM-->
-                                                                     <t t-if="o.invoice_ids[index].type == 'in_refund'">
-                                                                         <span t-esc="'{0:,.2f}'.format(o.invoice_ids[index].invoice_line_ids[ind].price_subtotal)"/> Rs.
-                                                                         <t t-set="open" t-value="open + o.invoice_ids[index].invoice_line_ids[ind].price_subtotal"/>
-                                                                     </t>
-
-                                                                    <t t-if="'CSH' in temp">
-                                                                         <span t-esc="'{0:,.2f}'.format(o.invoice_ids[index])"/>CD Rs.
-                                                                         <t t-set="open" t-value="open + o.invoice_ids[index].invoice_line_ids[ind].price_subtotal"/>
-                                                                         
-                                                                    </t>
-                                                                    
-                                                                    <!-- <t t-if="'BNK' in temp"> -->
-                                                                </td>
-                                                                 <td style="border: 1px solid black;" class="text-right">
-                                                                    <t t-if="inv_origin != False">
-                                                                    <!-- 'INV' in inv_origin -->
-                                                                         <t t-if= "'INV' in inv_origin">
-                                                                         <span t-esc="'{0:,.2f}'.format(o.invoice_ids[index].invoice_line_ids[ind].price_subtotal)"/> Rs.
-                                                                         <t t-set="open" t-value="open - o.invoice_ids[index].invoice_line_ids[ind].price_subtotal"/>
-                                                                       </t>
-                                                                    </t>
-                                                                     <!-- In case of Credit Note INV written by SM-->
-                                                                      <t t-if="o.invoice_ids[index].type == 'out_refund'">
-                                                                            <t t-if="'INV' in temp">
-
-                                                                             <span t-esc="'{0:,.2f}'.format(o.invoice_ids[index].invoice_line_ids[ind].price_subtotal)"/> Rs.
-                                                                             <t t-set="open" t-value="open - o.invoice_ids[index].invoice_line_ids[ind].price_subtotal"/>
-                                                                             </t>
-                                                                        </t>
-                                                                   
-                                                                     <t t-if="'BILL' in temp">
-                                                                        <!-- In case of Debit Note Bill written by SM-->
-                                                                         <t t-if="o.invoice_ids[index].type != 'in_refund'">
-                                                                             <span t-esc="'{0:,.2f}'.format(o.invoice_ids[index].invoice_line_ids[ind].price_subtotal)"/> Rs.
-                                                                             <t t-set="open" t-value="open - o.invoice_ids[index].invoice_line_ids[ind].price_subtotal"/>
-                                                                         </t>
-                                                                      </t>
-                                                                </td>
-                                                                 <td style="border: 1px solid black;" class="text-right">
-                                                                         <span t-esc="'{0:,.2f}'.format(open)"/> Rs bala.
-                                                                         
-                                                                 </td>
-                                                                 <t t-set="ind" t-value="ind+1"/>
-                                                                 
-                                                        </tr>
-                                                        
-                                                        <t t-set="ind" t-value="0"/>
-                                                        <t t-set="cond" t-value="True"/>       
-                                            </t>
-                                            
-                                        </t>   
-                                                    
-                                        
-                                    <t t-set="index" t-value="index+1"/>
-                                    
-                                </t>
-                                
-                                <t t-set="cond" t-value="False"/> 
-                                <t t-set="index" t-value="0"/>
-                                <t t-set="temp" t-value="none"/>
-                                <t t-set="inv_origin" t-value="none"/>
-                                <t t-if="tax">
-                                 <tr style="border: 1px solid black;">   
-                                    <td colspan="2"> </td>
-                                    <td style="border: 1px solid black;" class="text-right">
-                                         <span t-esc="inv_tax"/>      
-                                    </td>
-                                    <td style="border: 1px solid black;" class="text-left">
-                                        Tax    
-                                    </td>
-                                    <td style="border: 1px solid black;"></td> 
-                                    <td style="border: 1px solid black;"></td> 
-                                    <td style="border: 1px solid black;" class="text-right">
-                                             <span t-esc="'{0:,.2f}'.format(tax)"/> Rs.
-                                        </td>
-                                    <td style="border: 1px solid black;"></td> 
-                                    <td style="border: 1px solid black;" class="text-right">
-                                    
-                                       <t t-set="tax_total" t-value="open+tax"/> 
-                                       <t t-set="open" t-value="tax_total"/>
-
-                                        <span t-esc="'{0:,.2f}'.format(open)"/> Rs.
-                                    </td> 
-                                        
-                                        
-                                    </tr>
-                                    <t t-set="tax" t-value="0"/>
-                                
-                                </t>   
-                                
-                            </t>
-                      
-                            <t t-set="temp_1" t-value="0"/>
-                            <t t-set="temp2" t-value="none"/>
-                            <t t-set="po_num" t-value="none"/>
-                            <t t-set="inv_num" t-value="none"/>
-                            <t t-set="cond" t-value="False"/> 
-                            <!--  -->
-                            
-                            
-                                <tr t-foreach="lines(data, o)" style="border: 1px solid black;" t-as="line">
-                                   <t t-if="'INV' not in line['code']">
-                                   <t t-if="'BILL' not in line['code']">
-                                   <td style="border: 1px solid black;">
-                                        <span t-esc="line['date']"/>
-                                    </td>
-                                    
-                                    <td style="border: 1px solid black;">
-                                        <span t-esc="line['displayed_name']"/>
-                                        <t t-set="temp2" t-value="line['displayed_name'][0:13]"/>
-                                    </td>
-                                    <td style="border: 1px solid black;"></td>
-                                    
-                                    <!-- extra fields -->
-                                    <td style="border: 1px solid black;">
-                           
-                                        <t t-foreach="o.invoice_ids" t-as="i">
-                                        
-                                        
-                                                 <t t-if="cond == False">
-                        
-                                                       <t t-if="temp2 == o.invoice_ids[temp_1].number">
-                                                    
-                        <!--                             <t t-if="line['displayed_name']==o.invoice_ids[tmp].number"> -->
-                                                       <!--     <span t-esc="o.invoice_ids[temp_1].bill_number"/> -->
-                                                           <t t-set="cond" t-value="True"/> 
-                                                           
-                                                        <!--    <t t-set="po_num" t-value="o.invoice_ids[temp_1].po_number"/> -->
-                                                          
-                                                           <t t-set="inv_num" t-value="o.invoice_ids[temp_1].number"/>
-                                                           
-                                                       </t>
-                                                       
-                                                       
-                                                 </t>
-                                                
-                                    
-                                               <t t-set="temp_1" t-value="temp_1+1"/>
-                
-                                        </t>
-                                    </td>
-                                    <t t-set="temp2" t-value="none"/>
-                                    <t t-set="temp_1" t-value="0"/>
-                                    <t t-set="cond" t-value="False"/> 
-                                    <td style="border: 1px solid black;">
-                                        <span t-esc="po_num"/>
-                                        
-                                    </td>
-                                    <t t-set="po_num" t-value="none"/>
-                                    <td style="border: 1px solid black;">
-                                        <span t-esc="inv_num"/>
-                                    
-                                    </td>        
-                                    <t t-set="inv_num" t-value="none"/>         
-                        
-                                    <!-- <td style="border: 1px solid black;"></td>
-                                    <td style="border: 1px solid black;"></td> -->
-                                    <!--  -->
-                                    <td style="border: 1px solid black;" class="text-right">
-                                        <span t-esc="line['debit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                        <t t-set="open" t-value="open + line['debit']"/>
-                                    </td>
-                                    <td style="border: 1px solid black;" class="text-right">
-                                        <span t-esc="line['credit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                        <t t-set="open" t-value="open - line['credit']"/>
-                                    </td>
-                                    <td style="border: 1px solid black;" class="text-right">
-                                        <span t-esc="open" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                    </td>
-                                    <td style="border: 1px solid black;" class="text-right" t-if="data['form']['amount_currency']">
-                                        <t t-if="line['currency_id']">
-                                          <span t-esc="line['amount_currency']" t-options="{'widget': 'monetary', 'display_currency': line['currency_id']}"/>
-                                        </t>
-                                    </td>
-                                    </t>
-                                    </t>
+                        <table class="table table-condensed table-sm" border="1">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Journal</th>
+                                    <th>Document</th>
+                                    <th>Type</th>
+                                    <th>Product</th>
+                                    <th class="text-right">Debit</th>
+                                    <th class="text-right">Credit</th>
+                                    <th class="text-right">Balance</th>
                                 </tr>
-                                
-                                
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            <tr style="border: 1px solid black;">
-                                <td colspan="3" style="border: 1px solid black;"></td>
-                                <td class="text-right" style="border: 1px solid black;"> Total:</td>
-                                <td class="text-right" style="border: 1px solid black;"></td>
-                                <td class="text-right" style="border: 1px solid black;"></td>
-                                 <td class="text-right" style="border: 1px solid black;"></td>
-                                <td class="text-right" style="border: 1px solid black;"></td>
-                                <td class="text-left" style="border: 1px solid black;"><span t-esc="'{0:,.2f}'.format(open)"/> Rs.</td>
-                                
-                            
-                            
-                            
-                            
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="get_lines(data, o)" t-as="line">
+                                    <tr>
+                                        <td>
+                                            <span t-esc="datetime.datetime.strptime(str(line['date']), '%Y-%m-%d').strftime('%d/%m/%Y')"/>
+                                        </td>
+                                        <td><span t-esc="line['journal']"/></td>
+                                        <td><span t-esc="line['document']"/></td>
+                                        <td><span t-esc="line['type']"/></td>
+                                        <td><span t-esc="line['product'] or ''"/></td>
+
+                                        <td class="text-right">
+                                            <span t-esc="('%.2f' % line['debit'])"/>
+                                        </td>
+                                        <td class="text-right">
+                                            <span t-esc="('%.2f' % line['credit'])"/>
+                                        </td>
+                                        <td class="text-right">
+                                            <span t-esc="('%.2f' % line['running_balance'])"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </t>
             </t>
         </t>
-    </t>
-    </template>   
-
-
+    </template>
 </odoo>

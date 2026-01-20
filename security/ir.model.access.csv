@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_party_ledger_detailed_user,party.ledger.detailed user,model_party_ledger_detailed,base.group_user,1,0,0,0
