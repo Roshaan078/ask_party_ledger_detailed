@@ -39,10 +39,5 @@
             <field name="view_id" ref="account_common_report_view_detailed"/>
             <field name="target">new</field>
         </record>
-<!--        <menuitem id="menu_account_report_pld"-->
-<!--                  name="Party Ledger Detailed"-->
-<!--                  action="action_account_report_pld"-->
-<!--                  parent="menu_finance_partner_reports"-->
-<!--                  sequence="40"/>-->
     </data>
 </odoo>

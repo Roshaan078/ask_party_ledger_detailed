@@ -5,21 +5,16 @@
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.internal_layout">
                     <div class="page">
-
-                        <h3>
-                            Party Ledger :
-                            <span t-esc="o.name"/>
-                        </h3>
-
+                        <h3>Party Ledger: <span t-esc="o.name"/></h3>
+                        
                         <p>
-                            From:
-                            <span t-esc="datetime.datetime.strptime(data['form']['date_from'], '%Y-%m-%d').strftime('%d/%m/%Y')"/>
-                            &nbsp;&nbsp;
-                            To:
+                            <span style="margin-right:5px;">From:</span>
+                            <span t-esc="datetime.datetime.strptime(data['form']['date_from'], '%Y-%m-%d').strftime('%d/%m/%Y')" style="margin-right:15px;"/>
+                            <span style="margin-right:5px;">To:</span>
                             <span t-esc="datetime.datetime.strptime(data['form']['date_to'], '%Y-%m-%d').strftime('%d/%m/%Y')"/>
                         </p>
 
-                        <table class="table table-condensed table-sm" border="1">
+                        <table class="table table-condensed table-sm" border="1" style="width:100%; border-collapse: collapse;">
                             <thead>
                                 <tr>
                                     <th>Date</th>
@@ -35,28 +30,18 @@
                             <tbody>
                                 <t t-foreach="get_lines(data, o)" t-as="line">
                                     <tr>
-                                        <td>
-                                            <span t-esc="datetime.datetime.strptime(str(line['date']), '%Y-%m-%d').strftime('%d/%m/%Y')"/>
-                                        </td>
+                                        <td><span t-esc="line['date']"/></td>
                                         <td><span t-esc="line['journal']"/></td>
                                         <td><span t-esc="line['document']"/></td>
                                         <td><span t-esc="line['type']"/></td>
                                         <td><span t-esc="line['product'] or ''"/></td>
-
-                                        <td class="text-right">
-                                            <span t-esc="('%.2f' % line['debit'])"/>
-                                        </td>
-                                        <td class="text-right">
-                                            <span t-esc="('%.2f' % line['credit'])"/>
-                                        </td>
-                                        <td class="text-right">
-                                            <span t-esc="('%.2f' % line['running_balance'])"/>
-                                        </td>
+                                        <td class="text-right"><span t-esc="line['debit']"/></td>
+                                        <td class="text-right"><span t-esc="line['credit']"/></td>
+                                        <td class="text-right"><span t-esc="line['running_balance']"/></td>
                                     </tr>
                                 </t>
                             </tbody>
                         </table>
-
                     </div>
                 </t>
             </t>
