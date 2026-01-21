@@ -20,7 +20,7 @@
                                     <th>Date</th>
                                     <th>Journal</th>
                                     <th>Document</th>
-                                    <th>Type</th>
+                                    <!-- <th>Type</th> -->
                                     <th>Product</th>
                                     <th class="text-right">Debit</th>
                                     <th class="text-right">Credit</th>
@@ -33,7 +33,7 @@
                                         <td><span t-esc="line['date']"/></td>
                                         <td><span t-esc="line['journal']"/></td>
                                         <td><span t-esc="line['document']"/></td>
-                                        <td><span t-esc="line['type']"/></td>
+                                        <!-- <td><span t-esc="line['type']"/></td> -->
                                         <td><span t-esc="line['product'] or ''"/></td>
                                         <td class="text-right"><span t-esc="line['debit']"/></td>
                                         <td class="text-right"><span t-esc="line['credit']"/></td>

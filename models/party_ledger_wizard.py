@@ -15,7 +15,7 @@ class PartyLedgerDetailedWizard(models.TransientModel):
         ('supplier', 'Payable Accounts'),
         ('all', 'Receivable & Payable Accounts'),
     ], string="Accounts", default='all')
-    amount_currency = fields.Boolean(string="Amount in Currency")
+    # amount_currency = fields.Boolean(string="Amount in Currency")
     reconciled = fields.Boolean(string=" Reconciled")
     
     date_from = fields.Date(string="Start Date", required=True)
@@ -30,7 +30,7 @@ class PartyLedgerDetailedWizard(models.TransientModel):
                 'company_id': self.company_id.id,
                 'target_move': self.target_move,
                 'result_selection': self.result_selection,
-                'amount_currency': self.amount_currency,
+                # 'amount_currency': self.amount_currency,
                 'reconciled': self.reconciled,
                 'date_from': self.date_from,
                 'date_to': self.date_to,
