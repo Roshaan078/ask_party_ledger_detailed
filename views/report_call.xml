@@ -15,7 +15,7 @@
             <field name="header_spacing">3</field>
             <field name="dpi">110</field>
         </record>
-        <report
+        <!-- <report
             id="action_report_partnerledger_detailed"
             model="party.ledger.detailed"
             string="Party Ledger Detailed"
@@ -23,6 +23,16 @@
             name="ask_party_ledger_detailed.report_party_ledger"
             file="ask_party_ledger_detailed.report_party_ledger"
             paperformat="paperformat_party_ledger_custom"
-        />
+        /> -->
+        <!-- Report Action (unique id, correct report_name) -->
+        <record id="action_report_partnerledger_detailed" model="ir.actions.report">
+            <field name="name">Party Ledger Detailed</field>
+            <field name="model">party.ledger.detailed</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ask_party_ledger_detailed.report_party_ledger</field>
+            <field name="report_file">ask_party_ledger_detailed.report_party_ledger</field>
+            <field name="print_report_name">'Party Ledger Detailed - %s' % (object.name)</field>
+            <field name="paperformat_id" ref="ask_party_ledger_detailed.paperformat_party_ledger_custom"/>
+        </record>
     </data>
 </odoo>
