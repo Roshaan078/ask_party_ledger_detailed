@@ -52,7 +52,7 @@ class ReportPartyLedger(models.AbstractModel):
                         ELSE 0
                     END AS debit,
                     CASE
-                        WHEN m.move_type IN ('out_refund','in_refund') THEN ABS(COALESCE(aml.balance,0))
+                        WHEN m.move_type IN ('out_refund','in_refund') THEN COALESCE(aml.balance,0)
                         ELSE 0
                     END AS credit
                 FROM account_move_line aml
