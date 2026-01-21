@@ -20,8 +20,9 @@
                                     <th>Date</th>
                                     <th>Journal</th>
                                     <th>Document</th>
-                                    <!-- <th>Type</th> -->
                                     <th>Product</th>
+                                    <th class="text-right">Quantity</th>
+                                    <th class="text-right">Unit Price</th>
                                     <th class="text-right">Debit</th>
                                     <th class="text-right">Credit</th>
                                     <th class="text-right">Balance</th>
@@ -33,11 +34,12 @@
                                         <td><span t-esc="line['date']"/></td>
                                         <td><span t-esc="line['journal']"/></td>
                                         <td><span t-esc="line['document']"/></td>
-                                        <!-- <td><span t-esc="line['type']"/></td> -->
                                         <td><span t-esc="line['product'] or ''"/></td>
-                                        <td class="text-right"><span t-esc="line['debit']"/></td>
-                                        <td class="text-right"><span t-esc="line['credit']"/></td>
-                                        <td class="text-right"><span t-esc="line['running_balance']"/></td>
+                                        <td class="text-end"><t t-esc="'{:,.2f}'.format(line['quantity'] or 0)"/></td>
+                                        <td class="text-end"><t t-esc="'{:,.2f}'.format(line['price_unit'] or 0)"/></td>
+                                        <td class="text-end"><t t-esc="'{:,.0f}'.format(line['debit'] or 0)"/></td>
+                                        <td class="text-end"><t t-esc="'{:,.0f}'.format(line['credit'] or 0)"/></td>
+                                        <td class="text-end"><t t-esc="'{:,.0f}'.format(line['running_balance'] or 0)"/></td>
                                     </tr>
                                 </t>
                             </tbody>

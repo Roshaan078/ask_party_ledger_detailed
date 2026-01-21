@@ -1,37 +1,116 @@
-<section class="oe_container">
-    <div class="oe_row">
-        <h2 class="oe_slogan"><u>Detailed Partner Ledger</u></h2>
-        
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detailed Partner Ledger Module - Asksol</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 2em auto;
+            background-color: #fff;
+            padding: 2em;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #2a3f54;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 0.5em;
+        }
+        h2 {
+            font-size: 1.4em;
+            margin-top: 1.5em;
+        }
+        p {
+            margin-bottom: 1em;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #34495e;
+        }
+        .image-container {
+            text-align: center;
+            margin: 1.5em 0;
+        }
+        .image-container img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.05);
+        }
+        ul {
+            margin-left: 1.5em;
+        }
+        .footer {
+            margin-top: 3em;
+            text-align: center;
+            font-size: 0.9em;
+            color: #777;
+        }
+        .footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Detailed Partner Ledger</h1>
+        <p class="highlight">Company: Asksol</p>
+        <p class="highlight">Email: roshaan@asksol.pk | Phone: 0300-8628884 | Website: www.asksol.pk</p>
 
-        <div class="oe_span12">
-            <center><p class='oe_mt32'>
+        <h2>Overview</h2>
+        <p>
+            The <strong>Detailed Partner Ledger</strong> module provides a comprehensive ledger report for any partner (customer or vendor) in Odoo. 
+            After installation, it can be accessed via <strong>PDF Reports</strong> in the Accounting module.
+        </p>
+        <p>
+            Select the desired <strong>date range</strong>, <strong>journals</strong>, and <strong>partner(s)</strong> to generate a report including all invoice lines, products, debit/credit values, and running balances.
+        </p>
 
-            </p></center>
-            <p class='oe_mt32'>
-	           <b> Detailed partner ledger module, after installation, can be found under PDF reports menu in Accounting module. </b>
-            </p>
-	
-	    <div class="oe_span12">
-                <img src="1.png" alt="Sequence definition">
-            </div>
-
-	</div>
-	<br>
-	<div class="oe_span12">
-            <p>
-               <b> After Selecting required dates, journals, partner and Payable/receivable or both, click on Print button.
-		A report in PDF format <br>  will be downloaded in local memory and a partner's ledger with invoicing lines details 
-		will be available.</b>
-            </p>
-	    <div class="oe_span12">
-                <img src="2.png" alt="Sequence definition">
-            </div>
-            
-
-	    
+        <div class="image-container">
+            <img src="image1.png" alt="Select Dates and Journals Screenshot">
         </div>
 
+        <h2>Generating the Report</h2>
+        <p>
+            Once all filters are applied, click the <strong>Print</strong> button. 
+            A PDF file will be generated containing detailed entries per partner, including opening balances and product lines.
+        </p>
 
+        <div class="image-container">
+            <img src="image2.png" alt="Report Preview Screenshot">
+        </div>
+
+        <h2>Invoice Lines and Products</h2>
+        <p>
+            The report includes all invoices with their products listed line by line. 
+            Debit and credit amounts are calculated correctly based on invoice type, and opening balances are shown for the selected date range.
+        </p>
+
+        <div class="image-container">
+            <img src="image3.png" alt="Invoice Lines Screenshot">
+        </div>
+
+        <h2>Example PDF Report</h2>
+        <div class="image-container">
+            <img src="image4.png" alt="Sample PDF Report Screenshot">
+        </div>
+
+        <div class="footer">
+            &copy; 2026 Asksol | Developed by Roshaan Ahmad | Email: <a href="mailto:roshaan@asksol.pk">roshaan@asksol.pk</a>
+        </div>
     </div>
-</section>
-
+</body>
+</html>

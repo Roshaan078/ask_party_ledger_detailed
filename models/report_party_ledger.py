@@ -13,43 +13,47 @@ class ReportPartyLedger(models.AbstractModel):
 
         move_states = ("posted",) if target_move == 'posted' else ("draft", "posted")
 
+        # SQL query
         self.env.cr.execute("""
             WITH opening_balance AS (
                 SELECT
-                    aml.date AS date,
-                    j.code::text AS journal,
-                    m.name::text AS document,
+                    aml.partner_id,
+                    %s::date AS date,
+                    'Opening Balance'::text AS journal,
+                    'OpBal'::text AS document,
+                    'Opening Balance'::text AS type,
                     NULL::text AS product,
                     0::numeric AS quantity,
                     0::numeric AS price_unit,
-                    COALESCE(aml.debit,0)::numeric AS debit,
-                    COALESCE(aml.credit,0)::numeric AS credit
+                    SUM(COALESCE(aml.debit,0)) AS debit,
+                    SUM(COALESCE(aml.credit,0)) AS credit
                 FROM account_move_line aml
                 JOIN account_move m ON aml.move_id = m.id
-                JOIN account_journal j ON m.journal_id = j.id
-                JOIN account_account acc ON aml.account_id = acc.id
                 WHERE aml.partner_id = %s
-                  AND m.state IN %s
-                  AND m.name ILIKE 'OpBal%%'
-                  AND acc.account_type IN ('asset_receivable','liability_payable')
+                    AND m.state IN %s
+                    AND aml.date < %s
+                GROUP BY aml.partner_id
             ),
 
             product_lines AS (
                 SELECT
-                    aml.date AS date,
+                    aml.partner_id,
+                    aml.date,
                     j.code::text AS journal,
                     m.name::text AS document,
+                    CASE 
+                        WHEN m.move_type IN ('out_invoice','in_invoice') THEN 'Invoice'
+                        WHEN m.move_type IN ('out_refund','in_refund') THEN 'Credit Note'
+                    END::text AS type,
                     pt.name->>'en_US' AS product,
-                    COALESCE(aml.quantity,0)::numeric AS quantity,
-                    COALESCE(aml.price_unit,0)::numeric AS price_unit,
-                    CASE
-                        WHEN m.move_type IN ('out_invoice','in_invoice')
-                        THEN ABS(COALESCE(aml.price_subtotal,0))::numeric
+                    COALESCE(aml.quantity,0) AS quantity,
+                    COALESCE(aml.price_unit,0) AS price_unit,
+                    CASE 
+                        WHEN m.move_type IN ('out_invoice','in_invoice') THEN COALESCE(aml.quantity*aml.price_unit,0)
                         ELSE 0
                     END AS debit,
                     CASE
-                        WHEN m.move_type IN ('out_refund','in_refund')
-                        THEN ABS(COALESCE(aml.price_subtotal,0))::numeric
+                        WHEN m.move_type IN ('out_refund','in_refund') THEN COALESCE(aml.quantity*aml.price_unit,0)
                         ELSE 0
                     END AS credit
                 FROM account_move_line aml
@@ -58,31 +62,32 @@ class ReportPartyLedger(models.AbstractModel):
                 LEFT JOIN product_product pp ON aml.product_id = pp.id
                 LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
                 WHERE aml.partner_id = %s
-                  AND m.state IN %s
-                  AND aml.date BETWEEN %s AND %s
-                  AND aml.product_id IS NOT NULL
+                    AND m.state IN %s
+                    AND aml.product_id IS NOT NULL
+                    AND aml.date BETWEEN %s AND %s
             ),
 
             payment_lines AS (
                 SELECT
-                    aml.date AS date,
+                    aml.partner_id,
+                    aml.date,
                     j.code::text AS journal,
                     m.name::text AS document,
+                    'Payment / Journal'::text AS type,
                     NULL::text AS product,
                     0::numeric AS quantity,
                     0::numeric AS price_unit,
-                    COALESCE(aml.debit,0)::numeric AS debit,
-                    COALESCE(aml.credit,0)::numeric AS credit
+                    COALESCE(aml.debit,0) AS debit,
+                    COALESCE(aml.credit,0) AS credit
                 FROM account_move_line aml
                 JOIN account_move m ON aml.move_id = m.id
                 JOIN account_journal j ON m.journal_id = j.id
                 JOIN account_account acc ON aml.account_id = acc.id
                 WHERE aml.partner_id = %s
-                  AND m.state IN %s
-                  AND aml.date BETWEEN %s AND %s
-                  AND acc.account_type IN ('asset_receivable','liability_payable')
-                  AND m.move_type NOT IN ('out_invoice','in_invoice','out_refund','in_refund')
-                  AND m.name NOT ILIKE 'OpBal%%'
+                    AND m.state IN %s
+                    AND acc.account_type IN ('asset_receivable','liability_payable')
+                    AND m.move_type NOT IN ('out_invoice','in_invoice','out_refund','in_refund')
+                    AND aml.date BETWEEN %s AND %s
             ),
 
             all_lines AS (
@@ -91,29 +96,47 @@ class ReportPartyLedger(models.AbstractModel):
                 SELECT * FROM product_lines
                 UNION ALL
                 SELECT * FROM payment_lines
+            ),
+
+            running_balance_calc AS (
+                SELECT
+                    *,
+                    SUM(COALESCE(debit,0) - COALESCE(credit,0)) OVER (
+                        ORDER BY date, document, product NULLS LAST
+                    ) AS running_balance
+                FROM all_lines
             )
 
             SELECT
                 date,
                 journal,
                 document,
+                type,
                 product,
                 quantity,
                 price_unit,
                 debit,
                 credit,
-                SUM(debit - credit) OVER (
-                    ORDER BY date, document, product NULLS LAST
-                ) AS running_balance
-            FROM all_lines
+                running_balance
+            FROM running_balance_calc
             ORDER BY date, document, product NULLS LAST
         """, (
-            partner.id, move_states,
-            partner.id, move_states, date_from, date_to,
-            partner.id, move_states, date_from, date_to
+            date_from, partner.id, move_states, date_from,     # opening_balance
+            partner.id, move_states, date_from, date_to,       # product_lines
+            partner.id, move_states, date_from, date_to        # payment_lines
         ))
 
-        return self.env.cr.dictfetchall()
+        records = self.env.cr.dictfetchall()
+
+        # Ensure numeric types for QWeb rendering
+        for rec in records:
+            rec['debit'] = float(rec['debit'] or 0)
+            rec['credit'] = float(rec['credit'] or 0)
+            rec['running_balance'] = float(rec['running_balance'] or 0)
+            rec['quantity'] = float(rec['quantity'] or 0)
+            rec['price_unit'] = float(rec['price_unit'] or 0)
+
+        return records
 
     @api.model
     def _get_report_values(self, docids, data=None):
