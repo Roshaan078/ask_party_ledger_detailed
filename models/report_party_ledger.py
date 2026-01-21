@@ -13,7 +13,6 @@ class ReportPartyLedger(models.AbstractModel):
 
         move_states = ("posted",) if target_move == 'posted' else ("draft", "posted")
 
-        # SQL query
         self.env.cr.execute("""
             WITH opening_balance AS (
                 SELECT
@@ -49,11 +48,11 @@ class ReportPartyLedger(models.AbstractModel):
                     COALESCE(aml.quantity,0) AS quantity,
                     COALESCE(aml.price_unit,0) AS price_unit,
                     CASE 
-                        WHEN m.move_type IN ('out_invoice','in_invoice') THEN COALESCE(aml.quantity*aml.price_unit,0)
+                        WHEN m.move_type IN ('out_invoice','in_invoice') THEN ABS(COALESCE(aml.balance,0))
                         ELSE 0
                     END AS debit,
                     CASE
-                        WHEN m.move_type IN ('out_refund','in_refund') THEN COALESCE(aml.quantity*aml.price_unit,0)
+                        WHEN m.move_type IN ('out_refund','in_refund') THEN ABS(COALESCE(aml.balance,0))
                         ELSE 0
                     END AS credit
                 FROM account_move_line aml
