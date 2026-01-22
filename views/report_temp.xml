@@ -6,7 +6,7 @@
                 <t t-call="web.internal_layout">
                     <div class="page">
                         <h3>Party Ledger: <span t-esc="o.name"/></h3>
-                        
+
                         <p>
                             <span style="margin-right:5px;">From:</span>
                             <span t-esc="datetime.datetime.strptime(data['form']['date_from'], '%Y-%m-%d').strftime('%d/%m/%Y')" style="margin-right:15px;"/>
@@ -31,7 +31,7 @@
                             <tbody>
                                 <t t-foreach="get_lines(data, o)" t-as="line">
                                     <tr>
-                                        <td style="white-space:nowrap; border:1px solid #000;"><span t-esc="line['date']"/></td>
+                                        <td style="white-space:nowrap; border:1px solid #000;"><span t-esc="line['date'].strftime('%d/%m/%Y')"/></td>
                                         <td style="border:1px solid #000;"><span t-esc="line['journal']"/></td>
                                         <td style="border:1px solid #000;"><span t-esc="line['document']"/></td>
                                         <td style="border:1px solid #000;"><span t-esc="line['product'] or ''"/></td>
