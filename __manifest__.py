@@ -7,7 +7,7 @@
                 'base',
                 'sale',
                 'account',
-                'accounting_pdf_reports',
+                
                 ],
     'data': [
             'security/ir.model.access.csv',

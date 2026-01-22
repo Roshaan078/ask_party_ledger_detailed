@@ -2,6 +2,7 @@ from odoo import api, models, _
 from odoo.exceptions import UserError
 import time
 
+
 class ReportPartyLedger(models.AbstractModel):
     _name = 'report.ask_party_ledger_detailed.report_party_ledger'
     _description = 'Party Ledger Detailed Report (SQL Based)'
@@ -16,34 +17,37 @@ class ReportPartyLedger(models.AbstractModel):
         self.env.cr.execute("""
             WITH opening_balance AS (
                 SELECT
-                    aml.partner_id                        AS partner_id,
-                    %s::date                              AS date,
-                    'Opening Balance'                     AS journal,
-                    'Opening Balance'                     AS document,
-                    'Opening'                             AS type,
-                    NULL                                  AS product,
-                    0::numeric                            AS quantity,
-                    0::numeric                            AS price_unit,
+                    aml.partner_id                                AS partner_id,
+
+                    -- 👇 opening ALWAYS one day before start date
+                    (%s::date - INTERVAL '1 day')::date           AS date,
+
+                    'Opening Balance'                             AS journal,
+                    'Opening Balance'                             AS document,
+                    'Opening'                                     AS type,
+                    NULL                                          AS product,
+                    0::numeric                                    AS quantity,
+                    0::numeric                                    AS price_unit,
 
                     CASE 
                         WHEN SUM(aml.debit - aml.credit) > 0
                             THEN SUM(aml.debit - aml.credit)
                         ELSE 0
-                    END                                   AS debit,
+                    END                                           AS debit,
 
                     CASE 
                         WHEN SUM(aml.debit - aml.credit) < 0
                             THEN ABS(SUM(aml.debit - aml.credit))
                         ELSE 0
-                    END                                   AS credit
+                    END                                           AS credit
 
                 FROM account_move_line aml
                 JOIN account_move m      ON aml.move_id = m.id
                 JOIN account_account acc ON aml.account_id = acc.id
                 WHERE aml.partner_id = %s
-                  AND m.state IN %s
-                  AND acc.account_type IN ('asset_receivable','liability_payable')
-                  AND aml.date < %s
+                    AND m.state IN %s
+                    AND acc.account_type IN ('asset_receivable','liability_payable')
+                    AND aml.date < %s
                 GROUP BY aml.partner_id
             ),
 
@@ -81,9 +85,9 @@ class ReportPartyLedger(models.AbstractModel):
                 LEFT JOIN product_product pp ON aml.product_id = pp.id
                 LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
                 WHERE aml.partner_id = %s
-                  AND m.state IN %s
-                  AND aml.product_id IS NOT NULL
-                  AND aml.date BETWEEN %s AND %s
+                    AND m.state IN %s
+                    AND aml.product_id IS NOT NULL
+                    AND aml.date BETWEEN %s AND %s
             ),
 
             payment_lines AS (
@@ -98,14 +102,12 @@ class ReportPartyLedger(models.AbstractModel):
                     0::numeric                            AS price_unit,
 
                     CASE 
-                        WHEN aml.debit > 0
-                            THEN aml.debit
+                        WHEN aml.debit > 0 THEN aml.debit
                         ELSE 0
                     END                                   AS debit,
 
                     CASE 
-                        WHEN aml.credit > 0
-                            THEN aml.credit
+                        WHEN aml.credit > 0 THEN aml.credit
                         ELSE 0
                     END                                   AS credit
 
@@ -151,17 +153,17 @@ class ReportPartyLedger(models.AbstractModel):
             FROM running_balance_calc
             ORDER BY date, document, product NULLS LAST
         """, (
-            date_from,                # opening date
+            date_from,                # opening date base
             partner.id,
             move_states,
             date_from,
 
-            partner.id,               # product lines
+            partner.id,
             move_states,
             date_from,
             date_to,
 
-            partner.id,               # payment lines
+            partner.id,
             move_states,
             date_from,
             date_to
@@ -169,12 +171,12 @@ class ReportPartyLedger(models.AbstractModel):
 
         records = self.env.cr.dictfetchall()
 
-        for rec in records:
-            rec['debit'] = float(rec['debit'] or 0)
-            rec['credit'] = float(rec['credit'] or 0)
-            rec['running_balance'] = float(rec['running_balance'] or 0)
-            rec['quantity'] = float(rec['quantity'] or 0)
-            rec['price_unit'] = float(rec['price_unit'] or 0)
+        for r in records:
+            r['debit'] = float(r['debit'] or 0)
+            r['credit'] = float(r['credit'] or 0)
+            r['running_balance'] = float(r['running_balance'] or 0)
+            r['quantity'] = float(r['quantity'] or 0)
+            r['price_unit'] = float(r['price_unit'] or 0)
 
         return records
 

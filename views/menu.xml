@@ -5,6 +5,6 @@
             name="Partner Ledger Detailed"
             action="action_account_report_pld"
             parent="account.menu_finance_reports"
-            sequence="40"
+            sequence="25"
         />
 </odoo>
