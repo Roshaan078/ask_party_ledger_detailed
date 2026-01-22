@@ -71,7 +71,7 @@ class ReportPartyLedger(models.AbstractModel):
 
                     CASE
                         WHEN m.move_type IN ('out_refund','in_refund')
-                            THEN ABS(aml.balance)
+                            THEN aml.balance
                         ELSE 0
                     END                                   AS credit
 
