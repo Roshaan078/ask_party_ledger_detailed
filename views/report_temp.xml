@@ -36,22 +36,38 @@
                                 <t t-set="doc_title" t-value=""/>
                                 <t t-foreach="get_lines(data, o)" t-as="line">
                                     <tr>
-                                        <td style="white-space:nowrap; border:1px solid #000;"><span t-esc="line['date'].strftime('%d/%m/%Y')"/></td>
-                                        <td style="border:1px solid #000;"><span t-esc="line['journal']"/></td>
+                                        <td style="white-space:nowrap; border:1px solid #000;">
+                                            <span t-esc="line['date'].strftime('%d/%m/%Y')"/>
+                                        </td>
+                                        <td style="border:1px solid #000;">
+                                            <span t-esc="line['journal']"/>
+                                        </td>
                                         <t t-if="doc_title == line['document']">
                                             <td style="border-top:1px solid white !important"></td>
                                         </t>
                                         <t t-else="">
-                                            <td style="border:1px solid #000;border-left:1px solid #000;border-right:1px solid #000;">
+                                            <td style="border-top:1px solid #000; border-left:1px solid #000;border-right:1px solid #000;">
                                                 <span class="fw-bold" t-esc="line['document']"/>
                                             </td>
                                         </t>
-                                        <td style="border:1px solid #000;"><span t-esc="line['product'] or ''"/></td>
-                                        <td class="text-end" style="border:1px solid #000;"><t t-esc="'{:,.2f}'.format(line['quantity'] or 0)"/></td>
-                                        <td class="text-end" style="border:1px solid #000;"><t t-esc="'{:,.2f}'.format(line['price_unit'] or 0)"/></td>
-                                        <td class="text-end" style="border:1px solid #000;"><t t-esc="'{:,.0f}'.format(line['debit'] or 0)"/></td>
-                                        <td class="text-end" style="border:1px solid #000;"><t t-esc="'{:,.0f}'.format(line['credit'] or 0)"/></td>
-                                        <td class="text-end" style="border:1px solid #000;"><t t-esc="'{:,.0f}'.format(line['running_balance'] or 0)"/></td>
+                                        <td style="border:1px solid #000;">
+                                            <span t-esc="line['product'] or ''"/>
+                                        </td>
+                                        <td class="text-end" style="border:1px solid #000;">
+                                            <t t-esc="'{:,.2f}'.format(line['quantity'] or 0)"/>
+                                        </td>
+                                        <td class="text-end" style="border:1px solid #000;">
+                                            <t t-esc="'{:,.2f}'.format(line['price_unit'] or 0)"/>
+                                        </td>
+                                        <td class="text-end" style="border:1px solid #000;">
+                                            <t t-esc="'{:,.0f}'.format(line['debit'] or 0)"/>
+                                        </td>
+                                        <td class="text-end" style="border:1px solid #000;">
+                                            <t t-esc="'{:,.0f}'.format(line['credit'] or 0)"/>
+                                        </td>
+                                        <td class="text-end" style="border:1px solid #000;">
+                                            <t t-esc="'{:,.0f}'.format(line['running_balance'] or 0)"/>
+                                        </td>
                                     </tr>
                                     <t t-set="doc_title" t-value="line['document']"/>
                                 </t>
