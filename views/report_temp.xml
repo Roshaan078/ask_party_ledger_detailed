@@ -24,7 +24,7 @@
                                     <th style="width:85px; white-space:nowrap; border:1px solid #000;">Date</th>
                                     <th style="border:1px solid #000;">Journal</th>
                                     <th style="border:1px solid #000;">Document</th>
-                                    <th style="border:1px solid #000;">Product</th>
+                                    <th style="border:1px solid #000;">Description</th>
                                     <th class="text-right" style="border:1px solid #000;">Quantity</th>
                                     <th class="text-right" style="border:1px solid #000;">Unit Price</th>
                                     <th class="text-right" style="border:1px solid #000;">Debit</th>

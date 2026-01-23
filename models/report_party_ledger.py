@@ -97,7 +97,7 @@ class ReportPartyLedger(models.AbstractModel):
                     j.code::text                          AS journal,
                     m.name::text                          AS document,
                     'Payment / Journal'                   AS type,
-                    NULL                                  AS product,
+                    COALESCE(m.ref, '')                   AS product,
                     0::numeric                            AS quantity,
                     0::numeric                            AS price_unit,
 
