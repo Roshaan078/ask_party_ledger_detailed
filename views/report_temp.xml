@@ -42,7 +42,7 @@
                                             <td style="border-top:1px solid white !important"></td>
                                         </t>
                                         <t t-else="">
-                                            <td style="border:1px solid #000;">
+                                            <td style="border:1px solid #000;border-left:1px solid #000;border-right:1px solid #000;">
                                                 <span class="fw-bold" t-esc="line['document']"/>
                                             </td>
                                         </t>
